@@ -14,12 +14,14 @@ public class HelloWorldTest {
         response.prettyPrint();
     }
 
+    // Задание 3
     @Test
     public void testMyName(){
 
         System.out.println("Hello from Ruslan");
     }
 
+    // Задание 4
     // Тест, который отправляет GET-запрос по адресу: https://playground.learnqa.ru/api/get_text
     // Выведено содержимое текста в ответе на запрос
     @Test
