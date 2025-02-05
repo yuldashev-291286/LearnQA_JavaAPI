@@ -13,4 +13,11 @@ public class HelloWorldTest {
                 .andReturn();
         response.prettyPrint();
     }
+
+    @Test
+    public void testMyName(){
+
+        System.out.println("Hello from Ruslan");
+    }
+
 }
