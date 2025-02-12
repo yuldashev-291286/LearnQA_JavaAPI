@@ -208,5 +208,44 @@ public class HelloWorldTest {
 
     }
 
+    // Занятие №2. ДЗ №3. Ex7: Долгий редирект.
+    @Test
+    public void testRestAssured9(){
+
+        String url = "https://playground.learnqa.ru/api/long_redirect";
+        Response response = RestAssured
+                .given()
+                .redirects()
+                .follow(true)
+                .when()
+                .get(url)
+                .andReturn();
+
+        String locationHeader = response.getHeader("Location");
+        System.out.println(locationHeader);
+        int statusCode = response.getStatusCode();
+        System.out.println(statusCode);
+
+        while (statusCode != 200){
+
+            Response nextResponse = RestAssured
+                    .given()
+                    .redirects()
+                    .follow(true)
+                    .when()
+                    .get(url)
+                    .andReturn();
+
+            String nextLocationHeader = nextResponse.getHeader("Location");
+            System.out.println(nextLocationHeader);
+            int nextStatusCode = nextResponse.getStatusCode();
+            System.out.println(nextStatusCode);
+            statusCode = nextStatusCode;
+
+        }
+
+
+    }
+
 
 }
