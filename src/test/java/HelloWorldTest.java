@@ -184,8 +184,27 @@ public class HelloWorldTest {
 
         response.prettyPrint();
 
-        String TextOfTheSecondMessage = response.getString("messages[1].message");
-        System.out.println(TextOfTheSecondMessage);
+        String textOfTheSecondMessage = response.getString("messages[1].message");
+        System.out.println(textOfTheSecondMessage);
+
+    }
+
+    // Занятие №2. ДЗ №2. Ex6: Редирект.
+    @Test
+    public void testRestAssured8(){
+
+        Response response = RestAssured
+                .given()
+                .redirects()
+                .follow(false)
+                .when()
+                .get("https://playground.learnqa.ru/api/long_redirect")
+                .andReturn();
+
+        response.prettyPrint();
+
+        String locationHeader = response.getHeader("Location");
+        System.out.println(locationHeader);
 
     }
 
