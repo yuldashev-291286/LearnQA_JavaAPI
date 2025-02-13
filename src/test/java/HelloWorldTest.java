@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.lang.Thread.sleep;
+
 public class HelloWorldTest {
 
     // Занятие №1, ДЗ №3
@@ -244,6 +246,73 @@ public class HelloWorldTest {
 
         }
 
+    }
+
+    // Занятие №2. ДЗ №4. Ex8: Токены.
+    @Test
+    public void testRestAssured10() throws InterruptedException {
+
+        String url = "https://playground.learnqa.ru/ajax/api/longtime_job";
+
+        // 1. Создаем задачу.
+        JsonPath response = RestAssured
+                .get(url)
+                .jsonPath();
+
+        response.prettyPrint();
+
+        String token = response.getString("token");
+        int seconds = response.getInt("seconds");
+
+        Map<String, String> param = new HashMap<>();
+        param.put("token", token);
+
+        // 2. Делаем один запрос с token ДО того, как задача готова, убеждаемся в правильности поля status.
+        JsonPath response1 = RestAssured
+                .given()
+                .queryParams(param)
+                .get(url)
+                .jsonPath();
+
+        response1.prettyPrint();
+
+        String status = response1.getString("status");
+        String error = response1.getString("error");
+
+        if (status != null){
+            if (response1.getString("status").equals("Job is NOT ready")){
+                System.out.println("Задача еще не готова!");
+            } else if (response1.getString("status").equals("Job is ready")) {
+                System.out.println("Задача уже готова!");
+            }
+        }
+        if (error != null){
+            if (response1.getString("error").equals("No job linked to this token")){
+                System.out.println("Передан token, для которого не создавалась задача!");
+            }
+        }
+
+        // 3. Ждем нужное количество секунд с помощью функции Thread.sleep()
+        int millis = (seconds*1000)+1000;
+        sleep(millis);
+
+        // 4. Делаем один запрос c token ПОСЛЕ того, как задача готова, убеждаемся в правильности поля status и наличии поля result.
+        JsonPath response2 = RestAssured
+                .given()
+                .queryParams(param)
+                .get(url)
+                .jsonPath();
+
+        response2.prettyPrint();
+
+        String result = response2.getString("result");
+        String newStatus = response2.getString("status");
+
+        if (result != null){
+            if (newStatus.equals("Job is ready")){
+                System.out.println("Задача готова!");
+            }
+        }
 
     }
 
