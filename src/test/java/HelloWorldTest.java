@@ -1,16 +1,21 @@
 import io.restassured.RestAssured;
-import io.restassured.http.Cookie;
 import io.restassured.http.Headers;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
+import static java.nio.file.Files.lines;
 
 public class HelloWorldTest {
 
@@ -312,6 +317,92 @@ public class HelloWorldTest {
             if (newStatus.equals("Job is ready")){
                 System.out.println("Задача готова!");
             }
+        }
+
+    }
+
+    // Занятие №2. ДЗ №5. Ex9: Подбор пароля.
+    @Test
+    public void testRestAssured11(){
+
+        // Читаем пароли из файла
+        // Сохраняем пароли в коллекцию List
+        URI uri = null;
+        try {
+            uri = ClassLoader.getSystemResource("Passwords.txt").toURI();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        List<String> listOfPasswords = null;
+        try (Stream<String> lines = Files.lines(Paths.get(uri))) {
+            listOfPasswords = lines.collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //listOfPasswords.forEach(System.out::println);
+        //System.out.println(listOfPasswords.size());
+
+        String getSecretPasswordHomework = "https://playground.learnqa.ru/ajax/api/get_secret_password_homework";
+        String checkAuthCookie = "https://playground.learnqa.ru/ajax/api/check_auth_cookie";
+
+        String login = "super_admin";
+
+        for (int i = 0; i < listOfPasswords.size(); i++) {
+
+            // 1. Берем очередной пароль и вместе с логином коллеги вызываем первый метод get_secret_password_homework.
+            // В ответ метод будет возвращать авторизационную cookie с именем auth_cookie и каким-то значением.
+
+            String password = listOfPasswords.get(i);
+
+            Map<String, String> data1 = new HashMap<>();
+            data1.put("login", login);
+            data1.put("password", password);
+
+            JsonPath response1 = RestAssured
+                    .given()
+                    .body(data1)
+                    .when()
+                    .post(getSecretPasswordHomework)
+                    .jsonPath();
+
+            //response1.prettyPrint();
+
+            String cookiePassword = response1.getString("password");
+            String cookieEquals = response1.getString("equals");
+
+            //System.out.println(cookiePassword);
+            //System.out.println(cookieEquals);
+
+            // 2. Далее эту cookie мы передаем во второй метод check_auth_cookie.
+
+            Map<String, String> data2 = new HashMap<>();
+            data2.put("password", cookiePassword);
+            data2.put("equals", cookieEquals);
+
+            Response response2 = RestAssured
+                    .given()
+                    .body(data2)
+                    .when()
+                    .post(checkAuthCookie)
+                    .andReturn();
+
+            //response2.print();
+
+            // Если в ответ вернулась фраза "You are NOT authorized", значит пароль неправильный.
+            // В этом случае берем следующий пароль и все заново.
+            // Если же вернулась другая фраза - нужно, чтобы программа вывела верный пароль и эту фразу.
+
+            String phraseInResponse = response2.toString();
+
+            if (phraseInResponse.equals("You are NOT authorized") == true){
+                continue;
+            }else if (phraseInResponse.equals("You are NOT authorized") == false) {
+                System.out.println("Password: " + cookiePassword);
+                System.out.println("You are authorized");
+                break;
+            }
+
         }
 
     }
