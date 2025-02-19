@@ -5,6 +5,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lib.BaseTestCase;
+import lib.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -81,6 +82,40 @@ public class UserAuthTest extends BaseTestCase {
         JsonPath responseForCheck = spec.get().jsonPath();
         assertEquals(0, responseForCheck.getInt("user_id"), "user_id should be 0 for unauth request");
 
+
+    }
+
+    // Занятие №3, Учебный тест №8
+    @Test
+    public void testAuthUser1(){
+
+        Response responseCheckAuth = RestAssured
+                .given()
+                .header("x-csrf-token", this.header)
+                .cookie("auth_sid", this.cookie)
+                .get("https://playground.learnqa.ru/api/user/auth")
+                .andReturn();
+
+        Assertions.asserJsonByName(responseCheckAuth, "user_id", this.userIdOnAuth);
+    }
+
+    // Занятие №3, Учебный тест №9
+    @ParameterizedTest
+    @ValueSource(strings = {"cookie", "headers"})
+    public void testNegativeAuthUser1(String condition){
+        RequestSpecification spec = RestAssured.given();
+        spec.baseUri("https://playground.learnqa.ru/api/user/auth");
+
+        if (condition.equals("cookie")){
+            spec.cookie("auth_sid", this.cookie);
+        } else if (condition.equals("headers")) {
+            spec.header("x-csrf-token", this.header);
+        }else {
+            throw new IllegalArgumentException("Condition value is known: " + condition);
+        }
+
+        Response responseForCheck = spec.get().andReturn();
+        Assertions.asserJsonByName(responseForCheck, "user_id", 0);
 
     }
 
