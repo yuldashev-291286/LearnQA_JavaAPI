@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserAuthTest extends BaseTestCase {
 
@@ -117,6 +119,24 @@ public class UserAuthTest extends BaseTestCase {
         Response responseForCheck = spec.get().andReturn();
         Assertions.asserJsonByName(responseForCheck, "user_id", 0);
 
+    }
+
+    // Занятие №3. ДЗ 1. Ex10: Тест на короткую фразу. Фреймворк JUnit.
+    @Test
+    public void testShortPhraseJUnit(){
+        String hello = "Hello, world !!!";
+        int sizeStringHello = hello.length();
+
+        assertTrue(sizeStringHello > 15, "Длина строки hello больше 15 символов");
+        //assertFalse(sizeStringHello <= 15, "Длина строки hello меньше или равно 15 символов");
+    }
+
+    // Занятие №3. ДЗ 1. Ex10: Тест на короткую фразу. Библиотека Hamcrest.
+    @Test
+    public void testShortPhraseHamcrest(){
+        String hello = "Hello, world !!!";
+        int sizeStringHello = hello.length();
+        assertThat(sizeStringHello, allOf(greaterThan(15)));
     }
 
 
