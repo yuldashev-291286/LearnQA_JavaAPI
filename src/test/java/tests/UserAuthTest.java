@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.allOf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.jupiter.api.Assertions.*;
@@ -139,6 +140,34 @@ public class UserAuthTest extends BaseTestCase {
         assertThat(sizeStringHello, allOf(greaterThan(15)));
     }
 
+    // Занятие №3. ДЗ 2. Ex11: Тест запроса на метод cookie.
+    @Test
+    public void testRequestForCookieMethod(){
+
+        // Доступы к предустановленному пользователю:
+        String email = "vinkotov@example.com";
+        String password = "1234";
+
+        String cookieUrl = "http://playground.learnqa.ru/api/homework_cookie";
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("email", email);
+        queryParams.put("password", password);
+
+        JsonPath response = RestAssured
+                .given()
+                .queryParams(queryParams)
+                .post(cookieUrl)
+                .jsonPath();
+        //response.prettyPrint();
+
+        String cookie = response.toString();
+        System.out.println(cookie);
+
+        assertNotNull(response);
+        //assertNull(cookie);
+
+    }
 
     // Занятие №3. ДЗ 3. Ex12: Тест запроса на метод header.
     @Test
@@ -165,6 +194,7 @@ public class UserAuthTest extends BaseTestCase {
 
         assertNotNull(header);
         //assertNull(header);
+
     }
 
 
