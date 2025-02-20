@@ -164,7 +164,7 @@ public class UserAuthTest extends BaseTestCase {
         String cookie = response.toString();
         System.out.println(cookie);
 
-        assertNotNull(response);
+        assertNotNull(cookie);
         //assertNull(cookie);
 
     }
