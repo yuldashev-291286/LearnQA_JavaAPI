@@ -140,4 +140,33 @@ public class UserAuthTest extends BaseTestCase {
     }
 
 
+    // Занятие №3. ДЗ 3. Ex12: Тест запроса на метод header.
+    @Test
+    public void testRequestForHeaderMethod(){
+
+        // Доступы к предустановленному пользователю:
+        String email = "vinkotov@example.com";
+        String password = "1234";
+
+        String headerUrl = "https://playground.learnqa.ru/api/homework_header";
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("email", email);
+        queryParams.put("password", password);
+
+        JsonPath response = RestAssured
+                .given()
+                .queryParams(queryParams)
+                .post(headerUrl)
+                .jsonPath();
+        response.prettyPrint();
+
+        String header = response.getString("success");
+
+        assertNotNull(header);
+        //assertNull(header);
+    }
+
+
+
 }
