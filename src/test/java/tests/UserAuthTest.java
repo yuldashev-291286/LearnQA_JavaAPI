@@ -14,9 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.jupiter.api.Assertions.*;
@@ -197,6 +195,94 @@ public class UserAuthTest extends BaseTestCase {
 
     }
 
+    // Занятие №3. ДЗ 4. Ex13: User Agent. Не параметризованный тест.
+    @Test
+    public void userAgent(){
+
+        String[] userAgentsStrings =
+                {"Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; Galaxy Nexus Build/ICL53F) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30",
+                "Mozilla/5.0 (iPad; CPU OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/91.0.4472.77 Mobile/15E148 Safari/604.1",
+                "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36 Edg/91.0.100.0",
+                "Mozilla/5.0 (iPad; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"};
+
+
+        SortedMap<String, String> userAgents = new TreeMap<>();
+        for (int i = 0; i < userAgentsStrings.length; i++) {
+            userAgents.put("User Agent " + i, userAgentsStrings[i]);
+        }
+        //userAgents.forEach((k,v) -> System.out.println(k + ": " + v));
+
+        String userAgentCheckUrl = "https://playground.learnqa.ru/ajax/api/user_agent_check";
+
+        SortedMap<Integer, SortedMap<String, String>> resultAnswer = new TreeMap<>();
+
+        for (int i = 0; i < userAgentsStrings.length; i++) {
+            Map<String, String> queryParam = new HashMap<>();
+            queryParam.put("User Agent", userAgentsStrings[i]);
+
+            JsonPath response = RestAssured
+                    .given()
+                    .queryParams(queryParam)
+                    .get(userAgentCheckUrl)
+                    .jsonPath();
+
+            //response.prettyPrint();
+
+            SortedMap<String, String> answer = new TreeMap<>();
+            answer.put("user_agent", response.getString("user_agent"));
+            answer.put("platform", response.getString("platform"));
+            answer.put("browser", response.getString("browser"));
+            answer.put("device", response.getString("device"));
+
+            resultAnswer.put(i, answer);
+
+        }
+        //resultAnswer.forEach((k,v) -> System.out.println(k + ": " + v));
+
+        System.out.println("Список User Agent, которые вернули неправильным хотя бы один параметр, с указанием того, какой именно параметр неправильный.");
+
+        Iterator<SortedMap.Entry<Integer, SortedMap<String, String>>> itr =  resultAnswer.entrySet().iterator();
+        while(itr.hasNext()) {
+            SortedMap.Entry<Integer, SortedMap<String, String>> entry =  itr.next();
+            Integer key = entry.getKey();
+            SortedMap<String, String> value = entry.getValue();
+
+            System.out.println();
+            System.out.println("№ User Agent: " + key);
+
+            for(SortedMap.Entry<String, String> entryValue: value.entrySet()) {
+                String Key = entryValue.getKey();
+                String Value = entryValue.getValue();
+
+                // Список User Agent, которые вернули неправильным хотя бы один параметр, с указанием того, какой именно параметр неправильный.
+
+                if (Key.equals("platform") & (Value.equals("Mobile") | Value.equals("Web"))){
+                    System.out.println("Параметр: " + Key + " принимает правильное значение.");
+                } else if (Key.equals("browser") & (Value.equals("Chrome") | Value.equals("Firefox") | Value.equals("Yandex"))) {
+                    System.out.println("Параметр: " + Key + " принимает правильное значение.");
+                }else if (Key.equals("device") & (Value.equals("Android") | Value.equals("iOS"))){
+                    System.out.println("Параметр: " + Key + " принимает правильное значение.");
+                }
+
+                if (Key.equals("platform") & (Value.equals("Unknown") | Value.equals("No") | Value.equals("Googlebot"))){
+                    System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+                } else if (Key.equals("browser") & (Value.equals("Unknown") | Value.equals("No"))) {
+                    System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+                }else if (Key.equals("device") & (Value.equals("Unknown") | Value.equals("No")| Value.equals("iPhone"))){
+                    System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+                }
+
+                if (Key.equals("user_agent")){
+                    System.out.println("User Agent: " + Key + ", имеет значение: " + Value);
+                }
+
+
+            }
+
+        }
+
+    }
 
 
 }
