@@ -6,9 +6,12 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lib.BaseTestCase;
 import lib.Assertions;
+import lib.UserAgentArgumentsProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -197,7 +200,7 @@ public class UserAuthTest extends BaseTestCase {
 
     // Занятие №3. ДЗ 4. Ex13: User Agent. Не параметризованный тест.
     @Test
-    public void userAgent(){
+    public void testUserAgentNoParameterized(){
         String[] userAgentsStrings =
                 {"Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; Galaxy Nexus Build/ICL53F) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30",
                 "Mozilla/5.0 (iPad; CPU OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/91.0.4472.77 Mobile/15E148 Safari/604.1",
@@ -275,12 +278,130 @@ public class UserAuthTest extends BaseTestCase {
                     System.out.println("User Agent: " + Key + ", имеет значение: " + Value);
                 }
 
-
             }
 
         }
 
     }
+
+    // Занятие №3. ДЗ 4. Ex13: User Agent. Параметризованные тесты с несколькими аргументами. Аннотация @CsvSource.
+    // Здесь применен только один параметр User Agent, но через дата-провайдер передаются все четыре параметра.
+    @ParameterizedTest
+    @CsvSource({
+            "Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; Galaxy Nexus Build/ICL53F) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30, Mobile, No, Android",
+            "Mozilla/5.0 (iPad; CPU OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/91.0.4472.77 Mobile/15E148 Safari/604.1, Mobile, Chrome, iOS",
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html), Googlebot, Unknown, Unknown",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36 Edg/91.0.100.0, Web, Chrome, No",
+            "Mozilla/5.0 (iPad; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1, Mobile, No, iPhone"
+    })
+    public void testParameterizedAnnotationCsvSource(String userAgent, String platform, String browser, String device){
+
+        Map<String, String> userAgentParameter = new HashMap<>();
+        userAgentParameter.put("User Agent", userAgent);
+
+        String userAgentCheckUrl = "https://playground.learnqa.ru/ajax/api/user_agent_check";
+
+        JsonPath response = RestAssured
+                .given()
+                .queryParams(userAgentParameter)
+                .get(userAgentCheckUrl)
+                .jsonPath();
+
+        //response.prettyPrint();
+
+        SortedMap<String, String> answer = new TreeMap<>();
+        answer.put("user_agent", response.getString("user_agent"));
+        answer.put("platform", response.getString("platform"));
+        answer.put("browser", response.getString("browser"));
+        answer.put("device", response.getString("device"));
+
+        for(Map.Entry<String, String> entry: answer.entrySet()) {
+            String Key = entry.getKey();
+            String Value = entry.getValue();
+
+            // Список User Agent, которые вернули неправильным хотя бы один параметр, с указанием того, какой именно параметр неправильный.
+
+            if (Key.equals("platform") & (Value.equals("Mobile") | Value.equals("Web"))){
+                System.out.println("Параметр: " + Key + " принимает правильное значение.");
+            } else if (Key.equals("browser") & (Value.equals("Chrome") | Value.equals("Firefox") | Value.equals("Yandex"))) {
+                System.out.println("Параметр: " + Key + " принимает правильное значение.");
+            }else if (Key.equals("device") & (Value.equals("Android") | Value.equals("iOS"))){
+                System.out.println("Параметр: " + Key + " принимает правильное значение.");
+            }
+
+            if (Key.equals("platform") & (Value.equals("Unknown") | Value.equals("No") | Value.equals("Googlebot"))){
+                System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+            } else if (Key.equals("browser") & (Value.equals("Unknown") | Value.equals("No"))) {
+                System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+            }else if (Key.equals("device") & (Value.equals("Unknown") | Value.equals("No")| Value.equals("iPhone"))){
+                System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+            }
+
+            if (Key.equals("user_agent")){
+                System.out.println("User Agent: " + Key + ", имеет значение: " + Value);
+            }
+
+        }
+        System.out.println();
+
+    }
+
+    // Занятие №3. ДЗ 4. Ex13: User Agent. Параметризованные тесты с несколькими аргументами. Интерфейс ArgumentsProvider.
+    // Здесь тоже применен только один параметр User Agent, но через дата-провайдер передаются все четыре параметра.
+    @ParameterizedTest
+    @ArgumentsSource(UserAgentArgumentsProvider.class)
+    public void testParameterizedInterfaceArgumentsProvider(String userAgent, String platform, String browser, String device){
+
+        Map<String, String> userAgentParameter = new HashMap<>();
+        userAgentParameter.put("User Agent", userAgent);
+
+        String userAgentCheckUrl = "https://playground.learnqa.ru/ajax/api/user_agent_check";
+
+        JsonPath response = RestAssured
+                .given()
+                .queryParams(userAgentParameter)
+                .get(userAgentCheckUrl)
+                .jsonPath();
+
+        //response.prettyPrint();
+
+        SortedMap<String, String> answer = new TreeMap<>();
+        answer.put("user_agent", response.getString("user_agent"));
+        answer.put("platform", response.getString("platform"));
+        answer.put("browser", response.getString("browser"));
+        answer.put("device", response.getString("device"));
+
+        for(Map.Entry<String, String> entry: answer.entrySet()) {
+            String Key = entry.getKey();
+            String Value = entry.getValue();
+
+            // Список User Agent, которые вернули неправильным хотя бы один параметр, с указанием того, какой именно параметр неправильный.
+
+            if (Key.equals("platform") & (Value.equals("Mobile") | Value.equals("Web"))){
+                System.out.println("Параметр: " + Key + " принимает правильное значение.");
+            } else if (Key.equals("browser") & (Value.equals("Chrome") | Value.equals("Firefox") | Value.equals("Yandex"))) {
+                System.out.println("Параметр: " + Key + " принимает правильное значение.");
+            }else if (Key.equals("device") & (Value.equals("Android") | Value.equals("iOS"))){
+                System.out.println("Параметр: " + Key + " принимает правильное значение.");
+            }
+
+            if (Key.equals("platform") & (Value.equals("Unknown") | Value.equals("No") | Value.equals("Googlebot"))){
+                System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+            } else if (Key.equals("browser") & (Value.equals("Unknown") | Value.equals("No"))) {
+                System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+            }else if (Key.equals("device") & (Value.equals("Unknown") | Value.equals("No")| Value.equals("iPhone"))){
+                System.out.println("Параметр: " + Key + " принимает Не правильное значение.");
+            }
+
+            if (Key.equals("user_agent")){
+                System.out.println("User Agent: " + Key + ", имеет значение: " + Value);
+            }
+
+        }
+        System.out.println();
+
+    }
+
 
 
 }
