@@ -7,6 +7,7 @@ import io.restassured.specification.RequestSpecification;
 import lib.BaseTestCase;
 import lib.Assertions;
 import lib.UserAgentArgumentsProvider;
+import lib.ApiCoreRequests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,11 +23,20 @@ import java.util.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import org.junit.jupiter.api.DisplayName;
+
+@Epic("Auth cases")
+@Feature("Auth")
 public class UserAuthTest extends BaseTestCase {
 
     String cookie;
     String header;
     int userIdOnAuth;
+
+    private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
 
     @BeforeEach
     public void loginUser(){
@@ -34,12 +44,15 @@ public class UserAuthTest extends BaseTestCase {
         authData.put("email", "vinkotov@example.com");
         authData.put("password", "1234");
 
-        Response responseGetAuth = RestAssured
+        Response responseGetAuth = apiCoreRequests
+                .makePostRequest("https://playground.learnqa.ru/api/user/login", authData);
+
+/*        Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
                 .post("https://playground.learnqa.ru/api/user/login")
                 .andReturn();
-
+*/
         this.cookie = this.getCookie(responseGetAuth, "auth_sid");
         this.header = this.getHeader(responseGetAuth, "x-csrf-token");
         this.userIdOnAuth = this.getIntFromJson(responseGetAuth, "user_id");
@@ -48,9 +61,20 @@ public class UserAuthTest extends BaseTestCase {
 
     // Занятие №3, Учебный тест №6
     @Test
+    @Description("Тест проверяет авторизацию пользователя по email и password")
+    @DisplayName("Позитивный тест авторизации пользователя")
     public void testAuthUser(){
 
-        JsonPath responseCheckAuth = RestAssured
+        Response responseCheckAuth = apiCoreRequests
+                .makeGetRequest(
+                        "https://playground.learnqa.ru/api/user/auth",
+                        this.header,
+                        this.cookie
+                );
+
+        Assertions.asserJsonByName(responseCheckAuth, "user_id", this.userIdOnAuth);
+
+/*        JsonPath responseCheckAuth = RestAssured
                 .given()
                 .header("x-csrf-token", this.header)
                 .cookie("auth_sid", this.cookie)
@@ -65,17 +89,40 @@ public class UserAuthTest extends BaseTestCase {
                 userIdOnCheck,
                 "User id from auth request is not equal to user_id from check request"
         );
-
+*/
     }
 
     // Занятие №3, Учебный тест №7
     @ParameterizedTest
     @ValueSource(strings = {"cookie", "headers"})
+    @Description("Параметризованный тест на авторизацию пользователя по email и password")
+    @DisplayName("Негативный тест авторизации пользователя")
     public void testNegativeAuthUser(String condition){
         RequestSpecification spec = RestAssured.given();
         spec.baseUri("https://playground.learnqa.ru/api/user/auth");
 
-        if (condition.equals("cookie")){
+        if (condition.equals("cookie")) {
+            Response responseForCheck = apiCoreRequests
+                    .makeGetRequestWithCookies(
+                            "https://playground.learnqa.ru/api/user/auth",
+                            this.cookie);
+
+            Assertions.asserJsonByName(responseForCheck, "user_id", 0);
+
+        }else if (condition.equals("headers")){
+            Response responseForCheck = apiCoreRequests
+                    .makeGetRequestWithToken(
+                            "https://playground.learnqa.ru/api/user/auth",
+                            this.header);
+
+            Assertions.asserJsonByName(responseForCheck, "user_id", 0);
+
+        }else {
+            throw new IllegalArgumentException("Condition value is not known: " + condition);
+        }
+
+
+/*        if (condition.equals("cookie")){
             spec.cookie("auth_sid", this.cookie);
         } else if (condition.equals("headers")) {
             spec.header("x-csrf-token", this.header);
@@ -85,7 +132,7 @@ public class UserAuthTest extends BaseTestCase {
 
         JsonPath responseForCheck = spec.get().jsonPath();
         assertEquals(0, responseForCheck.getInt("user_id"), "user_id should be 0 for unauth request");
-
+*/
 
     }
 
