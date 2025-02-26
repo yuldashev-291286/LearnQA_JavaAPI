@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lib.Assertions;
 import lib.BaseTestCase;
+import lib.DataGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,9 +14,9 @@ import java.util.Map;
 
 public class UserRegisterTest extends BaseTestCase {
 
-    // Занятие 4. Ex15: Тесты на метод user. Учебный тест №1.
+    // Занятие 4. Учебный тест №1.
     @Test
-    public void testCreateUserWithExistingEmail(){
+    public void testCreateUserWithExistingEmailOld(){
         String email = "vinkotov@example.com";
 
         Map<String, String> userData = new HashMap<>();
@@ -35,6 +36,71 @@ public class UserRegisterTest extends BaseTestCase {
         Assertions.assertResponseTextEquals(responseCreateAuth, "Users with email '" + email + "' already exists");
 
     }
+
+    // Занятие 4. Учебный тест №5.
+    @Test
+    public void testCreateUserWithExistingEmail(){
+
+        String email = "vinkotov@example.com";
+
+        Map<String, String> userData = new HashMap<>();
+        userData.put("email", email);
+        DataGenerator.getRegistrationData(userData);
+
+        Response responseCreateAuth = RestAssured
+                .given()
+                .body(userData)
+                .post("https://playground.learnqa.ru/api/user/")
+                .andReturn();
+
+        Assertions.assertResponseCodeEquals(responseCreateAuth, 400);
+        Assertions.assertResponseTextEquals(responseCreateAuth, "Users with email '" + email + "' already exists");
+
+    }
+
+    // Занятие 4. Учебный тест №2.
+    @Test
+    public void testCreateUserSuccessfullyOld(){
+        String email = DataGenerator.getRandomEmail();
+
+        Map<String, String> userData = new HashMap<>();
+        userData.put("email", email);
+        userData.put("password", "123");
+        userData.put("username", "learnqa");
+        userData.put("firstName", "learnqa");
+        userData.put("lastName", "learnqa");
+
+        Response responseCreateAuth = RestAssured
+                .given()
+                .body(userData)
+                .post("https://playground.learnqa.ru/api/user/")
+                .andReturn();
+
+        Assertions.assertResponseCodeEquals(responseCreateAuth, 200);
+        //System.out.println(responseCreateAuth.asString());
+        Assertions.assertJsonHasField(responseCreateAuth, "id");
+
+    }
+
+    // Занятие 4. Учебный тест №6.
+    @Test
+    public void testCreateUserSuccessfully(){
+        String email = DataGenerator.getRandomEmail();
+
+        Map<String, String> userData = DataGenerator.getRegistrationData();
+
+        Response responseCreateAuth = RestAssured
+                .given()
+                .body(userData)
+                .post("https://playground.learnqa.ru/api/user/")
+                .andReturn();
+
+        Assertions.assertResponseCodeEquals(responseCreateAuth, 200);
+        //System.out.println(responseCreateAuth.asString());
+        Assertions.assertJsonHasField(responseCreateAuth, "id");
+
+    }
+
 
     // Занятие 4. Ex15: Тесты на метод user. ДЗ 1. Тест №1: Создание пользователя с некорректным email - без символа @.
     @Test
