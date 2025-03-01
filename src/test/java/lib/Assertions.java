@@ -41,6 +41,8 @@ public class Assertions {
     }
 
     public static void assertJsonHasField(Response Response, String expectedFieldName){
+
+        // Это сопоставитель Hamcrest hasKey(), из класса org.hamcrest.Matchers для строк JSON.
         Response.then().assertThat().body("$", hasKey(expectedFieldName));
 
     }
@@ -54,6 +56,8 @@ public class Assertions {
     }
 
     public static void assertJsonHasNotField(Response Response, String unexpectedFieldName){
+
+        // Это сопоставитель Hamcrest hasKey(), из класса org.hamcrest.Matchers для строк JSON.
         Response.then().assertThat().body("$", not(hasKey(unexpectedFieldName)));
 
     }

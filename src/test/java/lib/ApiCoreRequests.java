@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-public class ApiCoreRequests {
+public class ApiCoreRequests extends BaseTestCase {
 
     @Step("Get-запрос с token и cookie")
     public Response makeGetRequest(String url, String token, String cookie) {
@@ -191,6 +191,40 @@ public class ApiCoreRequests {
                 .andReturn();
 
         Assertions.assertResponseTextEquals(responseCreateAuth, "The value of 'username' field is too long");
+
+    }
+
+    // Занятие 4. Ex16: Запрос данных другого пользователя.
+    // ДЗ 2. В этой задаче нужно написать тест, который делает авторизацию одним пользователем, но получает данные другого (т.е. с другим ID).
+    // И убедиться, что в этом случае запрос также получает только username, так как мы не должны видеть остальные данные чужого пользователя.
+    @Step("Тест №5: Тест, который делает авторизацию одним пользователем, но получает данные другого, т.е. с другим ID.")
+    @Test
+    public void logsInAsOneUserButReceivesDataFromAnother(){
+
+        Map<String, String> authData = new HashMap<>();
+        authData.put("email", "vinkotov@example.com");
+        authData.put("password", "1234");
+
+        Response responseGetAuth = RestAssured
+                .given()
+                .body(authData)
+                .post("https://playground.learnqa.ru/api/user/login")
+                .andReturn();
+
+        String header = this.getHeader(responseGetAuth, "x-csrf-token");
+        String cookie = this.getCookie(responseGetAuth, "auth_sid");
+
+        Response responseUserData = RestAssured
+                .given()
+                .header("x-csrf-token", header)
+                .cookie("auth_sid", cookie)
+                .get("https://playground.learnqa.ru/api/user/3")
+                .andReturn();
+
+        Assertions.assertJsonHasField(responseUserData, "username");
+        Assertions.assertJsonHasNotField(responseUserData, "firstName");
+        Assertions.assertJsonHasNotField(responseUserData, "lastName");
+        Assertions.assertJsonHasNotField(responseUserData, "email");
 
     }
 
