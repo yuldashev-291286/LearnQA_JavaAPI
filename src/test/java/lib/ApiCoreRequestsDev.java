@@ -1,9 +1,6 @@
 package lib;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Step;
+import io.qameta.allure.*;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
@@ -24,6 +21,8 @@ import static io.restassured.RestAssured.given;
 
 @Epic("ApiCoreRequestsDev cases")
 @Feature("ApiCoreRequestsDev")
+@Story("ApiCoreRequests")
+@Owner("Юлдашев Р.А.")
 public class ApiCoreRequestsDev extends BaseTestCase {
 
     @Step("Get-запрос с token и cookie")
