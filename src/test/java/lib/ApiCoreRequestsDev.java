@@ -1,5 +1,6 @@
 package lib;
 
+import io.qameta.allure.Epic;
 import io.qameta.allure.Step;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
@@ -16,7 +17,9 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-public class ApiCoreRequests extends BaseTestCase {
+// Занятие 4. Ex 19: Запуск тестов на dev-окружении.
+
+public class ApiCoreRequestsDev extends BaseTestCase {
 
     @Step("Get-запрос с token и cookie")
     public Response makeGetRequest(String url, String token, String cookie) {
@@ -83,7 +86,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
-                .post("https://playground.learnqa.ru/api/user/")
+                .post("https://playground.learnqa.ru/api_dev/user/")
                 .andReturn();
 
         Assertions.assertResponseCodeEquals(responseCreateAuth, 400);
@@ -127,7 +130,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
-                .post("https://playground.learnqa.ru/api/user/")
+                .post("https://playground.learnqa.ru/api_dev/user/")
                 .andReturn();
 
         if (email == null | email == "") {
@@ -161,7 +164,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
-                .post("https://playground.learnqa.ru/api/user/")
+                .post("https://playground.learnqa.ru/api_dev/user/")
                 .andReturn();
 
         Assertions.assertResponseTextEquals(responseCreateAuth, "The value of 'username' field is too short");
@@ -189,7 +192,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
-                .post("https://playground.learnqa.ru/api/user/")
+                .post("https://playground.learnqa.ru/api_dev/user/")
                 .andReturn();
 
         Assertions.assertResponseTextEquals(responseCreateAuth, "The value of 'username' field is too long");
@@ -210,7 +213,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post("https://playground.learnqa.ru/api_dev/user/login")
                 .andReturn();
 
         String header = this.getHeader(responseGetAuth, "x-csrf-token");
@@ -220,7 +223,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .given()
                 .header("x-csrf-token", header)
                 .cookie("auth_sid", cookie)
-                .get("https://playground.learnqa.ru/api/user/3")
+                .get("https://playground.learnqa.ru/api_dev/user/3")
                 .andReturn();
 
         Assertions.assertJsonHasField(responseUserData, "username");
@@ -235,9 +238,9 @@ public class ApiCoreRequests extends BaseTestCase {
     @Test
     public void testChangeUserDataWithoutAuthorization(){
 
-        // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
+        // Метод создания пользователя: https://playground.learnqa.ru/api_dev/user/, всегда возвращает: {"error":"Wrong HTTP method"}
 
-        // Метод изменения пользователя: https://playground.learnqa.ru/api/user/" + userId.
+        // Метод изменения пользователя: https://playground.learnqa.ru/api_dev/user/" + userId.
         // userId=0, возвращает: {"error":"Wrong HTTP method"}
         // userId=1, возвращает: {"username":"Lana"}
         // userId=2, возвращает: {"username":"Vitaliy"}
@@ -256,7 +259,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseEditUser = RestAssured
                 .given()
                 .body(editData)
-                .put("https://playground.learnqa.ru/api/user/" + userId)
+                .put("https://playground.learnqa.ru/api_dev/user/" + userId)
                 .andReturn();
 
         // Здесь всегда возвращается: {"error":"Auth token not supplied"}
@@ -268,7 +271,7 @@ public class ApiCoreRequests extends BaseTestCase {
             // Получаем данные пользователя с новым username
             Response responseUserData = RestAssured
                     .given()
-                    .get("https://playground.learnqa.ru/api/user/" + userId)
+                    .get("https://playground.learnqa.ru/api_dev/user/" + userId)
                     .andReturn();
 
             System.out.println(responseUserData.asString());
@@ -284,7 +287,7 @@ public class ApiCoreRequests extends BaseTestCase {
     @Test
     public void testChangeUserDataWhileBeingAuthorizedByAnotherUser(){
 
-        // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
+        // Метод создания пользователя: https://playground.learnqa.ru/api_dev/user/, всегда возвращает: {"error":"Wrong HTTP method"}
         // Авторизуемся с нашим пользователем:
         // {'email': 'vinkotov@example.com', 'password': '1234', 'user_id':'2'}
         String email = "vinkotov@example.com";
@@ -297,12 +300,12 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post("https://playground.learnqa.ru/api_dev/user/login")
                 .andReturn();
 
         //System.out.println(responseGetAuth.asString());
 
-        // Метод изменения пользователя: https://playground.learnqa.ru/api/user/" + userId.
+        // Метод изменения пользователя: https://playground.learnqa.ru/api_dev/user/" + userId.
         // userId=0, возвращает: {"error":"Wrong HTTP method"}
         // userId=1, возвращает: {"username":"Lana"}
         // userId=2, возвращает: {"username":"Vitaliy"}
@@ -323,7 +326,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
                 .body(editData)
-                .put("https://playground.learnqa.ru/api/user/" + userId)
+                .put("https://playground.learnqa.ru/api_dev/user/" + userId)
                 .andReturn();
 
         // Здесь всегда возвращается: {"error":"Please, do not edit test users with ID 1, 2, 3, 4 or 5."}
@@ -337,7 +340,7 @@ public class ApiCoreRequests extends BaseTestCase {
                     .given()
                     .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                     .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                    .get("https://playground.learnqa.ru/api/user/" + userId)
+                    .get("https://playground.learnqa.ru/api_dev/user/" + userId)
                     .andReturn();
 
             System.out.println(responseUserData.asString());
@@ -353,7 +356,7 @@ public class ApiCoreRequests extends BaseTestCase {
     @Test
     public void testChangeUserEmailWhileLoggedInBySameUserButWithoutTheAtSymbol(){
 
-        // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
+        // Метод создания пользователя: https://playground.learnqa.ru/api_dev/user/, всегда возвращает: {"error":"Wrong HTTP method"}
         // Авторизуемся с нашим пользователем:
         // {'email': 'vinkotov@example.com', 'password': '1234', 'user_id':'2'}
         String email = "vinkotov@example.com";
@@ -365,12 +368,12 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post("https://playground.learnqa.ru/api_dev/user/login")
                 .andReturn();
 
         //System.out.println(responseGetAuth.asString());
 
-        // Url: https://playground.learnqa.ru/api/user/" + userId.
+        // Url: https://playground.learnqa.ru/api_dev/user/" + userId.
         // userId=0, возвращает: {"error":"Wrong HTTP method"}
         // userId=1, возвращает: {"username":"Lana"}
         // userId=2, возвращает: {"username":"Vitaliy"}
@@ -391,7 +394,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
                 .body(editData)
-                .put("https://playground.learnqa.ru/api/user/" + userId)
+                .put("https://playground.learnqa.ru/api_dev/user/" + userId)
                 .andReturn();
 
         // Здесь всегда возвращается: {"error":"Please, do not edit test users with ID 1, 2, 3, 4 or 5."}
@@ -405,7 +408,7 @@ public class ApiCoreRequests extends BaseTestCase {
                     .given()
                     .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                     .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                    .get("https://playground.learnqa.ru/api/user/" + userId)
+                    .get("https://playground.learnqa.ru/api_dev/user/" + userId)
                     .andReturn();
 
             System.out.println(responseUserData.asString());
@@ -422,7 +425,7 @@ public class ApiCoreRequests extends BaseTestCase {
     @Test
     public void testChangeUserFirstNameVeryShortValueOfOneCharacter(){
 
-        // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
+        // Метод создания пользователя: https://playground.learnqa.ru/api_dev/user/, всегда возвращает: {"error":"Wrong HTTP method"}
         // Авторизуемся с нашим пользователем:
         // {'email': 'vinkotov@example.com', 'password': '1234', 'user_id':'2'}
         String email = "vinkotov@example.com";
@@ -434,12 +437,12 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post("https://playground.learnqa.ru/api_dev/user/login")
                 .andReturn();
 
         //System.out.println(responseGetAuth.asString());
 
-        // Url: https://playground.learnqa.ru/api/user/" + userId.
+        // Url: https://playground.learnqa.ru/api_dev/user/" + userId.
         // userId=0, возвращает: {"error":"Wrong HTTP method"}
         // userId=1, возвращает: {"username":"Lana"}
         // userId=2, возвращает: {"username":"Vitaliy"}
@@ -460,7 +463,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
                 .body(editData)
-                .put("https://playground.learnqa.ru/api/user/" + userId)
+                .put("https://playground.learnqa.ru/api_dev/user/" + userId)
                 .andReturn();
 
         // Здесь всегда возвращается: {"error":"Please, do not edit test users with ID 1, 2, 3, 4 or 5."}
@@ -474,7 +477,7 @@ public class ApiCoreRequests extends BaseTestCase {
                     .given()
                     .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                     .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                    .get("https://playground.learnqa.ru/api/user/" + userId)
+                    .get("https://playground.learnqa.ru/api_dev/user/" + userId)
                     .andReturn();
 
             System.out.println(responseUserData.asString());
@@ -490,7 +493,7 @@ public class ApiCoreRequests extends BaseTestCase {
     @Test
     public void testAttemptDeleteAuthorizedUserByIDTwo(){
 
-        // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
+        // Метод создания пользователя: https://playground.learnqa.ru/api_dev/user/, всегда возвращает: {"error":"Wrong HTTP method"}
         // Генерировать нового пользователя мы не можем.
         // responseCreateAuth.getString("id") возвращает ошибку.
 
@@ -508,7 +511,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post("https://playground.learnqa.ru/api_dev/user/login")
                 .andReturn();
 
         //responseGetAuth.prettyPrint();
@@ -521,7 +524,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .given()
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                .delete(" https://playground.learnqa.ru/api/user/" + userId)
+                .delete(" https://playground.learnqa.ru/api_dev/user/" + userId)
                 .andReturn();
 
         //responseDeleteUser.prettyPrint();
@@ -552,14 +555,14 @@ public class ApiCoreRequests extends BaseTestCase {
         JsonPath responseCreateAuth = RestAssured
                 .given()
                 .body(userData)
-                .post("https://playground.learnqa.ru/api/user/")
+                .post("https://playground.learnqa.ru/api_dev/user/")
                 .jsonPath();
 
-        // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
+        // Метод создания пользователя: https://playground.learnqa.ru/api_dev/user/, всегда возвращает: {"error":"Wrong HTTP method"}
         // Генерировать нового пользователя мы не можем.
         // responseCreateAuth.getString("id") возвращает ошибку.
 
-        // Метод изменения пользователя: https://playground.learnqa.ru/api/user/" + userId.
+        // Метод изменения пользователя: https://playground.learnqa.ru/api_dev/user/" + userId.
         // userId=0, возвращает: {"error":"Wrong HTTP method"}
         // userId=1, возвращает: {"username":"Lana"}
         // userId=2, возвращает: {"username":"Vitaliy"}
@@ -578,7 +581,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post("https://playground.learnqa.ru/api_dev/user/login")
                 .andReturn();
 
         //responseGetAuth.print();
@@ -588,7 +591,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .given()
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                .delete(" https://playground.learnqa.ru/api/user/" + userId)
+                .delete(" https://playground.learnqa.ru/api_dev/user/" + userId)
                 .andReturn();
 
         // Получаем данные удаленного пользователя
@@ -596,7 +599,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .given()
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                .get("https://playground.learnqa.ru/api/user/" + userId)
+                .get("https://playground.learnqa.ru/api_dev/user/" + userId)
                 .jsonPath();
 
         //responseDeleteUserData.prettyPrint();
@@ -617,7 +620,7 @@ public class ApiCoreRequests extends BaseTestCase {
     @Test
     public void testDeleteUserWhileLoggedByAnotherUser(){
 
-        // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
+        // Метод создания пользователя: https://playground.learnqa.ru/api_dev/user/, всегда возвращает: {"error":"Wrong HTTP method"}
         // Генерировать нового пользователя мы не можем.
         // responseCreateAuth.getString("id") возвращает ошибку.
 
@@ -635,7 +638,7 @@ public class ApiCoreRequests extends BaseTestCase {
         Response responseGetAuth = RestAssured
                 .given()
                 .body(authData)
-                .post("https://playground.learnqa.ru/api/user/login")
+                .post("https://playground.learnqa.ru/api_dev/user/login")
                 .andReturn();
 
         //responseGetAuth.prettyPrint();
@@ -646,7 +649,7 @@ public class ApiCoreRequests extends BaseTestCase {
             System.out.println("Это не наш авторизованный пользователь !");
         }
 
-        // Метод изменения пользователя: https://playground.learnqa.ru/api/user/" + userId.
+        // Метод изменения пользователя: https://playground.learnqa.ru/api_dev/user/" + userId.
         // userId=0, возвращает: {"error":"Wrong HTTP method"}
         // userId=1, возвращает: {"username":"Lana"}
         // userId=2, возвращает: {"username":"Vitaliy"}
@@ -662,7 +665,7 @@ public class ApiCoreRequests extends BaseTestCase {
                 .given()
                 .header("x-csrf-token", this.getHeader(responseGetAuth, "x-csrf-token"))
                 .cookie("auth_sid", this.getCookie(responseGetAuth, "auth_sid"))
-                .delete(" https://playground.learnqa.ru/api/user/" + userId)
+                .delete(" https://playground.learnqa.ru/api_dev/user/" + userId)
                 .andReturn();
 
         //responseDeleteUser.prettyPrint();
