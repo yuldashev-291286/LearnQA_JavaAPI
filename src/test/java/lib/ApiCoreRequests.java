@@ -1,5 +1,8 @@
 package lib;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import io.qameta.allure.Step;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
@@ -7,6 +10,7 @@ import io.restassured.http.Header;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,6 +20,8 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
+@Epic("ApiCoreRequests cases")
+@Feature("ApiCoreRequests")
 public class ApiCoreRequests extends BaseTestCase {
 
     @Step("Get-запрос с token и cookie")
@@ -70,6 +76,8 @@ public class ApiCoreRequests extends BaseTestCase {
     // Занятие 4. Ex15: Тесты на метод user. ДЗ 1. Тест №1: Создание пользователя с некорректным email - без символа @.
     @Step("Тест №1: Создание пользователя с некорректным email - без символа @.")
     @Test
+    @Description("Создание пользователя с некорректным email - без символа @.")
+    @DisplayName("Создание пользователя с некорректным email - без символа @.")
     public void testCreateUserWithInvalidEmailWithoutTheATSymbol() {
         String email = "vinkotov_example.com";
 
@@ -103,6 +111,8 @@ public class ApiCoreRequests extends BaseTestCase {
             "vinkotov@example.com, 1234, username, '', lastName",
             "vinkotov@example.com, 1234, username, firstName, ''",
     })
+    @Description("Создание пользователя без указания одного из полей. С помощью @ParameterizedTest необходимо проверить, что отсутствие любого параметра не дает зарегистрировать пользователя.")
+    @DisplayName("Создание пользователя без указания одного из полей. С помощью @ParameterizedTest необходимо проверить, что отсутствие любого параметра не дает зарегистрировать пользователя.")
     public void testCreateUserWithoutSpecifyingOneOfFields(String Email, String Password, String Username, String FirstName, String LastName) {
 
         String email;
@@ -148,6 +158,8 @@ public class ApiCoreRequests extends BaseTestCase {
     // Занятие 4. Ex15: Тесты на метод user. ДЗ 1. Тест №3: Создание пользователя с очень коротким именем в один символ.
     @Step("Тест №3: Создание пользователя с очень коротким именем в один символ.")
     @Test
+    @Description("Создание пользователя с очень коротким именем в один символ.")
+    @DisplayName("Создание пользователя с очень коротким именем в один символ.")
     public void testCreateUserWithVeryShortOneCharacterName() {
         String shortUsername = "W";
 
@@ -171,6 +183,8 @@ public class ApiCoreRequests extends BaseTestCase {
     // Занятие 4. Ex15: Тесты на метод user. ДЗ 1. Тест №4: Создание пользователя с очень длинным именем - длиннее 250 символов.
     @Step("Тест №4: Создание пользователя с очень длинным именем - длиннее 250 символов.")
     @Test
+    @Description("Создание пользователя с очень длинным именем - длиннее 250 символов.")
+    @DisplayName("Создание пользователя с очень длинным именем - длиннее 250 символов.")
     public void testCreateUserWithVeryLongNameLongerThan250Characters() {
         String longUsername = "12345678901234567890123456789012345678901234567890" +
                 "12345678901234567890123456789012345678901234567890" +
@@ -199,8 +213,10 @@ public class ApiCoreRequests extends BaseTestCase {
     // Занятие 4. Ex16: Запрос данных другого пользователя.
     // ДЗ 2. В этой задаче нужно написать тест, который делает авторизацию одним пользователем, но получает данные другого (т.е. с другим ID).
     // И убедиться, что в этом случае запрос также получает только username, так как мы не должны видеть остальные данные чужого пользователя.
-    @Step("Тест №5: Тест, который делает авторизацию одним пользователем, но получает данные другого, т.е. с другим ID.")
+    @Step("Тест №5: Делаем авторизацию одним пользователем, но получаем данные другого, т.е. с другим ID.")
     @Test
+    @Description("Делаем авторизацию одним пользователем, но получаем данные другого, т.е. с другим ID.")
+    @DisplayName("Делаем авторизацию одним пользователем, но получаем данные другого, т.е. с другим ID.")
     public void logsInAsOneUserButReceivesDataFromAnother(){
 
         Map<String, String> authData = new HashMap<>();
@@ -231,8 +247,10 @@ public class ApiCoreRequests extends BaseTestCase {
     }
 
     // Занятие 4. ДЗ 3. Ex17: Негативные тесты на PUT. Тест №1: Попытаемся изменить данные пользователя, будучи неавторизованными.
-    @Step("Тест №6: Тест, который попытается изменить данные пользователя, будучи неавторизованными.")
+    @Step("Тест №6: Попытается изменить данные пользователя, будучи неавторизованными.")
     @Test
+    @Description("Попытается изменить данные пользователя, будучи неавторизованными.")
+    @DisplayName("Попытается изменить данные пользователя, будучи неавторизованными.")
     public void testChangeUserDataWithoutAuthorization(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -280,8 +298,10 @@ public class ApiCoreRequests extends BaseTestCase {
     }
 
     // Занятие 4. ДЗ 3. Ex17: Негативные тесты на PUT. Тест №2: Попытаемся изменить данные пользователя, будучи авторизованными другим пользователем.
-    @Step("Тест №7: Тест, который пытается изменить данные пользователя, будучи авторизованными другим пользователем.")
+    @Step("Тест №7: Попытаться изменить данные пользователя, будучи авторизованными другим пользователем.")
     @Test
+    @Description("Попытаться изменить данные пользователя, будучи авторизованными другим пользователем.")
+    @DisplayName("Попытаться изменить данные пользователя, будучи авторизованными другим пользователем.")
     public void testChangeUserDataWhileBeingAuthorizedByAnotherUser(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -349,8 +369,10 @@ public class ApiCoreRequests extends BaseTestCase {
     }
 
     // Занятие 4. ДЗ 3. Ex17: Негативные тесты на PUT. Тест №3: Попытаемся изменить email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @.
-    @Step("Тест №8: Тест, который пытается изменить email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @.")
+    @Step("Тест №8: Попытаться изменить email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @.")
     @Test
+    @Description("Попытаться изменить email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @.")
+    @DisplayName("Попытаться изменить email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @.")
     public void testChangeUserEmailWhileLoggedInBySameUserButWithoutTheAtSymbol(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -418,8 +440,10 @@ public class ApiCoreRequests extends BaseTestCase {
 
     // Занятие 4. ДЗ 3. Ex17: Негативные тесты на PUT. Тест №4: Попытаемся изменить firstName пользователя, будучи авторизованными тем же пользователем,
     // на очень короткое значение в один символ.
-    @Step("Тест №9: Тест, который пытается изменить firstName пользователя, будучи авторизованным тем же пользователем на очень короткое значение в один символ.")
+    @Step("Тест №9: Попытаться изменить firstName пользователя, будучи авторизованным тем же пользователем на очень короткое значение в один символ.")
     @Test
+    @Description("Попытаться изменить firstName пользователя, будучи авторизованным тем же пользователем на очень короткое значение в один символ.")
+    @DisplayName("Попытаться изменить firstName пользователя, будучи авторизованным тем же пользователем на очень короткое значение в один символ.")
     public void testChangeUserFirstNameVeryShortValueOfOneCharacter(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -488,6 +512,8 @@ public class ApiCoreRequests extends BaseTestCase {
     // Занятие 4. Ex18: Тесты на DELETE. Тест №1: Попытка удалить пользователя по ID 2. Убедиться, что система не даст вам удалить этого пользователя.
     @Step("Тест №10: Попытка удалить пользователя по ID 2. Убедиться, что система не даст вам удалить этого пользователя.")
     @Test
+    @Description("Попытка удалить пользователя по ID 2. Убедиться, что система не даст вам удалить этого пользователя.")
+    @DisplayName("Попытка удалить пользователя по ID 2. Убедиться, что система не даст вам удалить этого пользователя.")
     public void testAttemptDeleteAuthorizedUserByIDTwo(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -542,6 +568,8 @@ public class ApiCoreRequests extends BaseTestCase {
     @Step("Тест №11: Создать пользователя, авторизоваться из-под него, удалить,\n" +
             "    // затем попробовать получить его данные по ID и убедиться, что пользователь действительно удален.")
     @Test
+    @Description("Создать пользователя, авторизоваться из-под него, удалить, затем попробовать получить его данные по ID и убедиться, что пользователь действительно удален.")
+    @DisplayName("Создать пользователя, авторизоваться из-под него, удалить, затем попробовать получить его данные по ID и убедиться, что пользователь действительно удален.")
     @Disabled
     public void testCreateUserLoginDeleteGetHisDataByID(){
 
@@ -615,6 +643,8 @@ public class ApiCoreRequests extends BaseTestCase {
     // Занятие 4. Ex18: Тесты на DELETE. Тест №3: Попробовать удалить пользователя, будучи авторизованным другим пользователем.
     @Step("Тест №12: Попробовать удалить пользователя, будучи авторизованным другим пользователем.")
     @Test
+    @Description("Попробовать удалить пользователя, будучи авторизованным другим пользователем.")
+    @DisplayName("Попробовать удалить пользователя, будучи авторизованным другим пользователем.")
     public void testDeleteUserWhileLoggedByAnotherUser(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
