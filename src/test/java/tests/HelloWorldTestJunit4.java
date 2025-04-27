@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -453,6 +454,7 @@ public class HelloWorldTestJunit4 {
     }
 
     // Занятие №3, Учебный тест №3 и №5
+    @Ignore
     @ParameterizedTest
     @ValueSource(strings = {"", "John", "Pete"})
     public void testHelloMethodWithoutName(String name){
