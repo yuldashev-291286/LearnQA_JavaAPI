@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,20 +13,20 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
-import static java.nio.file.Files.lines;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HelloWorldTest {
+public class HelloWorldTestJunit4 {
 
 
     // Занятие №1, ДЗ №3
-    @Test
+    @org.junit.Test
     public void testMyName(){
 
         System.out.println("Hello from Ruslan");
@@ -36,7 +35,7 @@ public class HelloWorldTest {
     // Занятие №1, ДЗ №4
     // Тест, который отправляет GET-запрос по адресу: https://playground.learnqa.ru/api/get_text
     // Выведено содержимое текста в ответе на запрос
-    @Test
+    @org.junit.Test
     public void testSendGETRequestToAddress(){
 
         Response response = RestAssured
@@ -47,7 +46,7 @@ public class HelloWorldTest {
 
 
     // Занятие №2, Учебный тест №1
-    @Test
+    @org.junit.Test
     public void testRestAssured1(){
 
         Map<String, String> params = new HashMap<>();
@@ -68,7 +67,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2, Учебный тест №2
-    @Test
+    @org.junit.Test
     public void testRestAssured2(){
 
         Map<String,Object> body = new HashMap<>();
@@ -85,7 +84,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2, Учебный тест №3
-    @Test
+    @org.junit.Test
     public void testRestAssured3(){
 
         Response response = RestAssured
@@ -101,7 +100,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2, Учебный тест №4
-    @Test
+    @org.junit.Test
     public void testRestAssured4(){
 
         Map<String,String> headers = new HashMap<>();
@@ -123,7 +122,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2, Учебный тест №5
-    @Test
+    @org.junit.Test
     public void testRestAssured5(){
 
         Map<String,String> data = new HashMap<>();
@@ -155,7 +154,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2, Учебный тест №6
-    @Test
+    @org.junit.Test
     public void testRestAssured6(){
 
         Map<String,String> data = new HashMap<>();
@@ -189,7 +188,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2. ДЗ №1. Ex5: Парсинг JSON.
-    @Test
+    @org.junit.Test
     public void testRestAssured7(){
 
         JsonPath response = RestAssured
@@ -204,7 +203,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2. ДЗ №2. Ex6: Редирект.
-    @Test
+    @org.junit.Test
     public void testRestAssured8(){
 
         Response response = RestAssured
@@ -223,7 +222,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2. ДЗ №3. Ex7: Долгий редирект.
-    @Test
+    @org.junit.Test
     public void testRestAssured9(){
 
         String url = "https://playground.learnqa.ru/api/long_redirect";
@@ -261,7 +260,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2. ДЗ №4. Ex8: Токены.
-    @Test
+    @org.junit.Test
     public void testRestAssured10() throws InterruptedException {
 
         String url = "https://playground.learnqa.ru/ajax/api/longtime_job";
@@ -329,7 +328,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №2. ДЗ №5. Ex9: Подбор пароля.
-    @Test
+    @org.junit.Test
     public void testRestAssured11(){
 
         // Читаем пароли из файла
@@ -416,7 +415,7 @@ public class HelloWorldTest {
 
 
     // Занятие №3, Учебный тест №1
-    @Test
+    @org.junit.Test
     public void testFor200(){
 
         Response response = RestAssured
@@ -427,7 +426,7 @@ public class HelloWorldTest {
         }
 
     // Занятие №3, Учебный тест №2
-    @Test
+    @org.junit.Test
     public void testFor404(){
 
         Response response = RestAssured
@@ -438,7 +437,7 @@ public class HelloWorldTest {
     }
 
     // Занятие №3, Учебный тест №4
-    @Test
+    @org.junit.Test
     public void testHelloMethodWithName(){
 
         String name = "Username";
