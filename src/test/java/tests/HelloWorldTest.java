@@ -19,9 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
-import static java.nio.file.Files.lines;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HelloWorldTest {
 
