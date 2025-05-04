@@ -6,7 +6,12 @@ import tests.*;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        HelloWorldTestJunit4.class
+        HelloWorldTestJunit4.class,
+        UserAuthTestJunit4.class,
+        UserDeleteTestJunit4.class,
+        UserEditTestJunit4.class,
+        UserGetTestJunit4.class,
+        UserRegisterTestJunit4.class
 })
 public class TestSuite {
 

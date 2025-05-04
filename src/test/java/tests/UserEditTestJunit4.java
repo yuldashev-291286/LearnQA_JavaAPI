@@ -13,10 +13,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UserEditTest extends BaseTestCase {
+public class UserEditTestJunit4 extends BaseTestCase {
 
     // Занятие 4. Учебный тест №7.
-    @Test
+    @org.junit.Test
     public void testEditJustCreatedTest(){
         // GENERATE USER
         Map<String, String> userData = DataGenerator.getRegistrationData();
@@ -106,7 +106,7 @@ public class UserEditTest extends BaseTestCase {
     }
 
     // Занятие 4. Ex17: Негативные тесты на PUT. Тест №1: Попытаемся изменить данные пользователя, будучи неавторизованными.
-    @Test
+    @org.junit.Test
     public void testChangeUserDataWithoutAuthorization(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -154,7 +154,7 @@ public class UserEditTest extends BaseTestCase {
     }
 
     // Занятие 4. Ex17: Негативные тесты на PUT. Тест №2: Попытаемся изменить данные пользователя, будучи авторизованными другим пользователем.
-    @Test
+    @org.junit.Test
     public void testChangeUserDataWhileBeingAuthorizedByAnotherUser(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -222,7 +222,7 @@ public class UserEditTest extends BaseTestCase {
     }
 
     // Занятие 4. Ex17: Негативные тесты на PUT. Тест №3: Попытаемся изменить email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @.
-    @Test
+    @org.junit.Test
     public void testChangeUserEmailWhileLoggedInBySameUserButWithoutTheAtSymbol(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
@@ -290,7 +290,7 @@ public class UserEditTest extends BaseTestCase {
 
     // Занятие 4. Ex17: Негативные тесты на PUT. Тест №4: Попытаемся изменить firstName пользователя, будучи авторизованными тем же пользователем,
     // на очень короткое значение в один символ.
-    @Test
+    @org.junit.Test
     public void testChangeUserFirstNameVeryShortValueOfOneCharacter(){
 
         // Метод создания пользователя: https://playground.learnqa.ru/api/user/, всегда возвращает: {"error":"Wrong HTTP method"}
